@@ -118,7 +118,7 @@ Gy1 = np.array([[ 1],
                 [-1]])
 
 # Gx1 = np.array([[-1,-2,-1,0,1,2,1]])
-Gx1 = -Gy.T
+Gx1 = -Gy1.T
 
 edgeMapX  = convolve(Hist, Gx, mode='same')
 edgeMapY  = convolve(Hist, Gy, mode='same')
