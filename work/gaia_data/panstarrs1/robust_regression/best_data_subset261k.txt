@@ -1,0 +1,5 @@
+best_data in PANSTARRS1
+
+visibility_periods_used > 8 & astrometric_excess_noise < 1 (изначально не было, надо добавить, хотя это не влияет ни на что)
+
+!((16 & quality_flag) == 0) && ( ((1 + 64 + 128) & quality_flag ) == 0 ) & g_mean_psf_mag_error < 0.02 & r_mean_psf_mag_error < 0.02 & i_mean_psf_mag_error < 0.02 && ( ((32+64+128+1024+524288+8388608+536870912+1073741824) & obj_info_flag ) == 0 ) 

@@ -1,0 +1,55 @@
+Standart magnitudes from PanSTARRS1 ugriz
+https://arxiv.org/pdf/1203.0297.pdf
+J.L. Tonry et al. (2012)
+
+
+  x          y       A0      A1      A2        ±      B0      B1        ±
+(g−r)P1   (B−gP1)   0.212   0.556   0.034    0.032   0.213   0.587    0.034
+(g−r)P1   (V−rP1)   0.005   0.462   0.013    0.012   0.006   0.474    0.012
+(g−r)P1   (RC−rP1) −0.137  −0.108  −0.029    0.015  −0.138  −0.131    0.015
+(g−r)P1   (IC−iP1) −0.366  −0.136  −0.018    0.017  −0.367  −0.149    0.016
+(g−r)P1   (V−wP1)  −0.021   0.299   0.187    0.025  −0.011   0.439    0.035
+(g−r)P1   (V−gP1)   0.005  −0.536   0.011    0.012   0.006  −0.525    0.012
+
+
+B  = g   0.212 + 0.556*(g-r)P1 + 0.034*(g-r)P1**2   | 0.032 ||| + 0.213 - 0.587*(g-r)P1   | 0.034
+V  = r   0.005 + 0.462*(g-r)P1 + 0.013*(g-r)P1**2   | 0.012 ||| + 0.006 - 0.474*(g-r)P1   | 0.012
+RC = r  −0.137 − 0.108*(g-r)P1 − 0.029*(g-r)P1**2   | 0.015 ||| − 0.138 - 0.131*(g-r)P1   | 0.015
+IC = i  −0.366 − 0.136*(g-r)P1 − 0.018*(g-r)P1**2   | 0.017 ||| − 0.367 - 0.149*(g-r)P1   | 0.016
+V  = w  −0.021 + 0.299*(g-r)P1 + 0.187*(g-r)P1**2   | 0.025 ||| − 0.011 + 0.439*(g-r)P1   | 0.035
+V  = g   0.005 − 0.536*(g-r)P1 + 0.011*(g-r)P1**2   | 0.012 ||| + 0.006 - 0.525*(g-r)P1   | 0.012
+
+
+
+B  = g  +0.212 + 0.556*(g-r)P1 + 0.034 
+V  = r  +0.005 + 0.462*(g-r)P1 + 0.013 
+RC = r  -0.137 - 0.108*(g-r)P1 - 0.029 
+IC = i  -0.366 - 0.136*(g-r)P1 - 0.018 
+V  = w  -0.021 + 0.299*(g-r)P1 + 0.187 
+V  = g  +0.005 - 0.536*(g-r)P1 + 0.011 
+
+
+B  = g  +0.213 - 0.587
+V  = r  +0.006 - 0.474
+RC = r  -0.138 - 0.131
+IC = i  -0.367 - 0.149
+V  = w  -0.011 + 0.439
+V  = g  +0.006 - 0.525
+
+
+B  = cleaned_ps1_g + 0.212 + 0.556*(cleaned_ps1_g - cleaned_ps1_r) + 0.034*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+V  = cleaned_ps1_r + 0.005 + 0.462*(cleaned_ps1_g - cleaned_ps1_r) + 0.013*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+RC = cleaned_ps1_r - 0.137 - 0.108*(cleaned_ps1_g - cleaned_ps1_r) - 0.029*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+IC = cleaned_ps1_i - 0.366 - 0.136*(cleaned_ps1_g - cleaned_ps1_r) - 0.018*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+V  = cleaned_ps1_w - 0.021 + 0.299*(cleaned_ps1_g - cleaned_ps1_r) + 0.187*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+V  = cleaned_ps1_g + 0.005 - 0.536*(cleaned_ps1_g - cleaned_ps1_r) + 0.011*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+
+
+
+B  = cleaned_ps1_g + 0.212 + 0.556*(cleaned_ps1_g - cleaned_ps1_r) + 0.034*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+V  = cleaned_ps1_r + 0.005 + 0.462*(cleaned_ps1_g - cleaned_ps1_r) + 0.013*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+RC = cleaned_ps1_r - 0.137 - 0.108*(cleaned_ps1_g - cleaned_ps1_r) - 0.029*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+IC = cleaned_ps1_i - 0.366 - 0.136*(cleaned_ps1_g - cleaned_ps1_r) - 0.018*pow(cleaned_ps1_g - cleaned_ps1_r,2)
+
+
+

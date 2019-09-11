@@ -1,0 +1,111 @@
+topcat -stilts plot2plane \
+   xpix=568 ypix=512 \
+   yflip=true xlabel=g-i ylabel=M_i aspect=1 xcrowd=0.9998301109057076 \
+    ycrowd=0.9998301109057076 texttype=latex fontsize=18 \
+   xmin=-0.27802197802197826 xmax=5.778021978021978 ymin=-4.5 ymax=1 \
+   legend=false \
+   shading=auto antialias=true \
+   layer_01=Mark \
+      in_01=/home/pavel/general/sao_internship/trainings_RGB/try_topcat/phot_gaia_to_sdss/worksheet_with_cleaned_g_and_i.vot \
+      x_01=cleaned_g_min_i y_01=cleaned_m_i \
+      size_01=2 color_01=cccccc \
+   layer_02=Mark \
+      in_02=/home/pavel/general/sao_internship/trainings_RGB/try_topcat/phot_gaia_to_sdss/worksheet_with_cleaned_g_and_i.vot \
+       icmd_02='select b17<0.03' \
+      x_02=cleaned_g_min_i y_02=cleaned_m_i \
+      size_02=2 color_02=ff3333 \
+   layer_03=Mark \
+      in_03=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_03=ASCII icmd_03='select <edgeMHm2p0>' \
+      x_03=gmag-imag y_03=imag \
+      shape_03=filled_triangle_down size_03=5 color_03=magenta \
+   layer_04=Line \
+      in_04=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_04=ASCII icmd_04='select <edgeMHm2p0>' \
+      x_04=gmag-imag y_04=imag \
+      color_04=magenta \
+   layer_05=Mark \
+      in_05=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_05=ASCII icmd_05='select <edgeMHm1p6>' \
+      x_05=gmag-imag y_05=imag \
+      shape_05=filled_triangle_up size_05=4 color_05=black \
+   layer_06=Line \
+      in_06=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_06=ASCII icmd_06='select <edgeMHm1p6>' \
+      x_06=gmag-imag y_06=imag \
+      color_06=black \
+   layer_07=Mark \
+      in_07=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_07=ASCII icmd_07='select <edgeMHm1p2>' \
+      x_07=gmag-imag y_07=imag \
+      size_07=3 \
+   layer_08=Line \
+      in_08=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_08=ASCII icmd_08='select <edgeMHm1p2>' \
+      x_08=gmag-imag y_08=imag \
+   layer_09=Mark \
+      in_09=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_09=ASCII icmd_09='select <edgeMHm0p8>' \
+      x_09=gmag-imag y_09=imag \
+      shape_09=filled_square size_09=4 color_09=0000cc \
+   layer_10=Line \
+      in_10=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_10=ASCII icmd_10='select <edgeMHm0p8>' \
+      x_10=gmag-imag y_10=imag \
+      color_10=0000cc \
+   layer_11=Mark \
+      in_11=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_11=ASCII icmd_11='select <edgeMHm0p6>' \
+      x_11=gmag-imag y_11=imag \
+      shape_11=filled_diamond size_11=4 color_11=ff9900 \
+   layer_12=Line \
+      in_12=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_12=ASCII icmd_12='select <edgeMHm0p6>' \
+      x_12=gmag-imag y_12=imag \
+      color_12=ff9900 \
+   layer_13=Mark \
+      in_13=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_13=ASCII icmd_13='select <edgeMHm0p4>' \
+      x_13=gmag-imag y_13=imag \
+      shape_13=open_circle size_13=5 color_13=6633ff \
+   layer_14=Line \
+      in_14=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_14=ASCII icmd_14='select <edgeMHm0p4>' \
+      x_14=gmag-imag y_14=imag \
+      color_14=6633ff thick_14=3 dash_14=3,3 \
+   layer_15=Mark \
+      in_15=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_15=ASCII icmd_15='select <edgeMHm0p2>' \
+      x_15=gmag-imag y_15=imag \
+      shape_15=open_circle size_15=5 color_15=ff3333 \
+   layer_16=Line \
+      in_16=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_16=ASCII icmd_16='select <edgeMHm0p2>' \
+      x_16=gmag-imag y_16=imag \
+      color_16=ff3333 thick_16=3 \
+   layer_17=Mark \
+      in_17=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_17=ASCII icmd_17='select <edgeMH0p0>' \
+      x_17=gmag-imag y_17=imag \
+      shape_17=open_circle size_17=5 color_17=333333 \
+   layer_18=Line \
+      in_18=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_18=ASCII icmd_18='select <edgeMH0p0>' \
+      x_18=gmag-imag y_18=imag \
+      color_18=333333 thick_18=3 dash_18=8,4 \
+   layer_19=Mark \
+      in_19=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_19=ASCII icmd_19='select <edgeMH0p2>' \
+      x_19=gmag-imag y_19=imag \
+      shape_19=open_circle size_19=5 color_19=009900 \
+   layer_20=Line \
+      in_20=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_20=ASCII icmd_20='select <edgeMH0p2>' \
+      x_20=gmag-imag y_20=imag \
+      color_20=009900 thick_20=5 dash_20=3,3 \
+   layer_21=Mark \
+      in_21=/home/pavel/general/TRGB/work/isochrones/table4/table4.dat \
+       ifmt_21=ASCII \
+       icmd_21='select "(label == 3 | label == 4) & logAge >9.59"' \
+      x_21=gmag-imag y_21=imag \
+      shape_21=x color_21=black 

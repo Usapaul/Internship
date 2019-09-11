@@ -1,0 +1,26 @@
+Standart magnitudes from SDSS ugriz
+https://www.sdss.org/dr12/algorithms/sdssUBVRITransform/#Lupton2005
+Lupton (2005)
+
+B = u - 0.8116*(u - g) + 0.1313;  sigma = 0.0095
+B = g + 0.3130*(g - r) + 0.2271;  sigma = 0.0107
+
+V = g - 0.2906*(u - g) + 0.0885;  sigma = 0.0129
+V = g - 0.5784*(g - r) - 0.0038;  sigma = 0.0054
+
+R = r - 0.1837*(g - r) - 0.0971;  sigma = 0.0106
+R = r - 0.2936*(r - i) - 0.1439;  sigma = 0.0072
+
+I = r - 1.2444*(r - i) - 0.3820;  sigma = 0.0078
+I = i - 0.3780*(i - z)  -0.3974;  sigma = 0.0063
+
+
+B = cleaned_sdss_g + 0.3130*(cleaned_sdss_g - cleaned_sdss_r) + 0.2271
+
+V = cleaned_sdss_g - 0.5784*(cleaned_sdss_g - cleaned_sdss_r) - 0.0038
+
+R = cleaned_sdss_r - 0.2936*(cleaned_sdss_r - cleaned_sdss_i) - 0.1439
+
+I = cleaned_sdss_r - 1.2444*(cleaned_sdss_r - cleaned_sdss_i) - 0.3820
+
+
