@@ -34,7 +34,7 @@ parser.add_argument('--rangeX',help='Bounds of the range of X',nargs=2,
 parser.add_argument('--rangeY',help='Bounds of the range of Y',nargs=2,
                     metavar=('y1','y2'),type=float,default=None)
 
-parser.add_argument('--stepX',help='Bin size along X-axis',
+parser.add_argument('--stepX',help='Bin size along X-axis',metavar='size',
                     type=float,default=None)
 
 parser.add_argument('--stepY',help='Bin size along Y-axis',metavar='size',
