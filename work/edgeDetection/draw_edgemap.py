@@ -15,9 +15,9 @@ import matplotlib.colors
 
 #------------------------------------------------
 parser = argparse.ArgumentParser(description=
-        ''' Make 2d-histogram from datafile with coordinates of
-            points of 2d-graphics [x,y] 
-            (or astropy.Table with specified names of X- and Y- columns). 
+        ''' Creating a 2d histogram for the given coordinates
+            of the points [x, y] from the data file
+            (or astropy.Table with the specified column names X and Y).
         ''')
 
 parser.add_argument('datafile',help='Name of file containing [x,y] coords')
@@ -28,23 +28,24 @@ parser.add_argument('--columnX','-x',help='Name of the X column',
 parser.add_argument('--columnY','-y',help='Name of the Y column',
                     metavar='column_name',default='col1')
 
-parser.add_argument('--rangeX',help='Bounds of the range of X',nargs=2,
+parser.add_argument('--rangeX',help='X range bounds',nargs=2,
                     metavar=('x1','x2'),type=float,default=None)
 
-parser.add_argument('--rangeY',help='Bounds of the range of Y',nargs=2,
+parser.add_argument('--rangeY',help='Y range bounds',nargs=2,
                     metavar=('y1','y2'),type=float,default=None)
 
-parser.add_argument('--stepX',help='Bin size along X-axis',metavar='size',
-                    type=float,default=None)
+parser.add_argument('--stepX',help='The size of the bin along the X axis',
+                    metavar='size',type=float,default=None)
 
-parser.add_argument('--stepY',help='Bin size along Y-axis',metavar='size',
-                    type=float,default=None)
+parser.add_argument('--stepY',help='The size of the bin along the Y axis',
+                    metavar='size',type=float,default=None)
 
 parser.add_argument('--fixed','-f',dest='fixedFlag',action='store_true',
-                    help='Flag to make X- and Y-size of bins equal')
+                    help='Flag to make bin sizes along X and Y axes equal')
 
 parser.add_argument('--log',dest='logFlag',action='store_true',
-                    help='Flag to write log10(counts) in every bin')
+                    help='A flag for writing logarithm values of the quantity \
+                          [log10(quantity)] in each bin')
 
 args = parser.parse_args()
 
@@ -57,10 +58,9 @@ arrayX = dataTable[args.columnX]
 arrayY = dataTable[args.columnY]
 
 #------------------------------------------------
-
-# Specifing parameters for histogram: user's values or internal initialization
-# (in the case they are not specified in the command line).
-# N bins is choosen by user or from Sturges' formula
+# Specifying parameters for histogram: user's values (or internal 
+# initialization in the case they are not specified in the command line).
+# N bins is chosen by user or from Sturges' formula
 
 rangeX = args.rangeX if args.rangeX is not None \
          else [np.min(arrayX),np.max(arrayX)]
@@ -80,7 +80,8 @@ if args.fixedFlag is True:
 gridX = np.arange(rangeX[0],rangeX[1]+stepX,stepX)
 gridY = np.arange(rangeY[0],rangeY[1]+stepY,stepY)
 
-numX, numY = len(gridX), len(gridY)
+# len(grid) minus 1 because grid is the edges of bins
+numX, numY = len(gridX)-1, len(gridY)-1
 
 #------------------------------------------------
 
@@ -88,16 +89,16 @@ Hist, Hxedges, Hyedges = np.histogram2d(arrayX,arrayY,bins=[gridX,gridY])
 
 Hist = Hist.T
 
+Hist_not_log = Hist.copy()
 if args.logFlag is True:
-    Hist_not_log = Hist.copy()
     Hist = np.where(Hist > 0, np.log10(Hist), 0.)
 
 #------------------------------------------------
 # Creating edge-detection maps
 
-# Gx and Gy -- Sobel's edge detection kernels [3x3]
+# Gx and Gy -- Sobel's edge detection 2d-kernels [3x3]
 # along x- and y-axis correspondingly.
-# Gx1 and Gy1 -- the same but [1x7] and [7x1]
+# Gx1 and Gy1 -- the same but 1d-
 
 Gx = np.array([[-1, 0, 1],
                [-2, 0, 2],
@@ -132,6 +133,7 @@ edgeMapX1, edgeMapY1 = np.abs(edgeMapX1), np.abs(edgeMapY1)
 edgeMapXY = np.sqrt(edgeMapX**2 + edgeMapY**2)
 edgeMapX1Y1 = np.sqrt(edgeMapX1**2 + edgeMapY1**2)
 
+#------------------------------------------------
 #------------------------------------------------
 
 fig, ax = plt.subplots(2,3,figsize=(14,8))
@@ -180,7 +182,7 @@ fig.colorbar(pcolor11, ax=ax[1,1], fraction=0.046, pad=0.04)
 
 #-----------------------------------------------
 # ax[0,2] -- plotting stars
-ax[0,2].set(aspect='equal',title='HRD')
+ax[0,2].set(aspect='equal',title='CMD')
 ax[0,2].set_xlim(rangeX[0], rangeX[1])
 ax[0,2].set_ylim(rangeY[1], rangeY[0])
 pcolor02 = ax[0,2].plot(arrayX,arrayY,',')
@@ -201,12 +203,22 @@ plt.tight_layout()
 plt.show()
 
 
-#------------------------------------------------
+#================================================
+#================================================
+
+# This block is intended only for saving
+# one slice (column) of the histogram in files.
+# Then I needed to draw graphs to compare the slices from the results
+# of applying two different kernels of the Sobel filter
+# (smoothed 3x3 and smoothed 1x7) 
+# only for the initial viewing of the values and shape of the peaks,
+# evaluating them for adequacy
 
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return array[idx]
+
 
 def write_color_slice(filename,hist_map,colour):
     file = open(filename,'w')
@@ -215,7 +227,7 @@ def write_color_slice(filename,hist_map,colour):
         file.write(str(gridY[i])+' '+str(arr[i])+'\n')
     file.close()
 
-
+# colourV_I -- chosen value of the colour to draw correspond slice
 colourV_I = 2.
 
 write_color_slice('fileHist_not_log.dat',Hist_not_log,colourV_I)
