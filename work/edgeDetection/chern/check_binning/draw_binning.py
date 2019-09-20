@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(description=
              (or astropy.Table with the specified column names X and Y).
          ''')
 
-parser.add_argument('datafile',help='Name of file containing [x,y] coords')
+parser.add_argument('--datafile',help='Name of file containing [x,y] coords')
 
 parser.add_argument('--columnX','-x',help='Name of the X column',
                     metavar='column_name',default='col0')
@@ -61,25 +61,39 @@ args = parser.parse_args()
 
 #------------------------------------------------
 
-dataTable = ascii.read(args.datafile)
-ndata = len(dataTable)
+#dataTable = ascii.read(args.datafile)
+coordsRX = np.random.random((3000000)) * (4.5-0.5) + 0.5
+coordsRY = np.random.random((3000000)) * (-1-(-5)) - 5.0
+coordsRY += (-4-(-5)) + 0.25 * (coordsRX-2)**2
+#dataTable = ascii.read(args.datafile)
+ndata = len(coordsRX)
 
-arrayX = dataTable[args.columnX]
-arrayY = dataTable[args.columnY]
+#arrayX = dataTable[args.columnX]
+arrayX = coordsRX + np.random.normal(0., 0.1, coordsRX.shape)
+#arrayY = dataTable[args.columnY]
+arrayY = coordsRY + np.random.normal(0., 0.1, coordsRY.shape)
+
+# np.abs(np.random((coordsRX.shape))*0.2)
+# np.abs(np.random((coordsRY.shape))*0.2)
 
 #------------------------------------------------
 ''' Specifying parameters for histogram: user's values (or internal 
     initialization in the case they are not specified in the command line).
     N bins is chosen by user or from Sturges' formula
 '''
-rangeX = args.rangeX if args.rangeX is not None \
-         else [np.min(arrayX),np.max(arrayX)]
+# rangeX = args.rangeX if args.rangeX is not None \
+#          else [np.min(arrayX),np.max(arrayX)]
+
+rangeX = [0.5,4.5]
 
 stepX  = args.stepX if args.stepX is not None \
          else (rangeX[1] - rangeX[0]) / (1 + int(np.log2(ndata)))
 
-rangeY = args.rangeY if args.rangeY is not None \
-         else [np.min(arrayY),np.max(arrayY)]
+# rangeY = args.rangeY if args.rangeY is not None \
+#          else [np.min(arrayY),np.max(arrayY)]
+
+rangeY = [-5,-1]
+
 
 stepY  = args.stepY if args.stepY is not None \
          else (rangeY[1] - rangeY[0]) / (1 + int(np.log2(ndata)))
@@ -130,14 +144,20 @@ Gx = np.array([[-1,-2,-1, 0, 1, 2, 1],
 Gy = -Gx.T
 
 
+# Gy = np.array([[ 15,   69,  114,   69,  15],
+#                [ 35,  155,  255,  155,  35],
+#                [  0,    0,    0,    0,   0],
+#                [-35, -155, -255, -155, -35],
+#                [-15,  -69, -114,  -69, -15]])
 
-Gy = np.array([[ 15,   69,  114,   69,  15],
-               [ 35,  155,  255,  155,  35],
-               [  0,    0,    0,    0,   0],
-               [-35, -155, -255, -155, -35],
-               [-15,  -69, -114,  -69, -15]])
+# Gx = -Gy.T
 
-Gx = -Gy.T
+
+
+
+
+
+
 
 
 
@@ -156,8 +176,7 @@ def edgeDetection_filtering(histogram,kernel):
     borderY, borderX = np.array(kernel.shape) // 2
     mask = np.ones(edgeMap.shape,dtype=bool)
     mask[borderY:height-borderY,borderX:width-borderX] = False
-    return np.where(mask | (edgeMap < 0), 0., edgeMap)
-
+    return np.where(mask, 0., np.abs(edgeMap))
 
 edgeMapX  = edgeDetection_filtering(Hist, Gx)
 edgeMapY  = edgeDetection_filtering(Hist, Gy)
@@ -174,7 +193,7 @@ binsY = (gridY[:-1] + gridY[1:]) / 2 # binsY/X -- central points of bins
 binsX = (gridX[:-1] + gridX[1:]) / 2 # in the edgeDetection map
 
 # boundsTRGB is used to constrain the TRGB-region in the edgeDetection map
-boundsTRGB = [[-5.0,-2.0], [2.0,3.9]]
+boundsTRGB = [[-5.0,-2.0], [2.0,4.01]]
 maskTRGB = ((binsY >= boundsTRGB[0][0]) & (binsY <= boundsTRGB[0][1]), \
             (binsX >= boundsTRGB[1][0]) & (binsX <= boundsTRGB[1][1]))
 
@@ -188,38 +207,67 @@ numY_TRGB, numX_TRGB = regionTRGB.shape
 # We use the following functions to constrain the TRGB region 
 # by specifying y_upper[lower]Bounds arrays,
 # and y_initvalues is the initial approximation
-if args.datafile.find('SDSS') >= 0:
-    y_initvalues  = 0.3 * (binsX_TRGB-2)**2 - 3.9
-    y_upperBounds = 0.3 * (binsX_TRGB-2)**2 - 3.6
-    y_lowerBounds = 0.3 * (binsX_TRGB-2)**2 - 4.3
-elif args.datafile.find('PS1') >= 0:
-    y_initvalues  = 0.2 * (binsX_TRGB-2)**2 - 4.0
-    y_upperBounds = 0.2 * (binsX_TRGB-2)**2 - 3.6
-    y_lowerBounds = 0.2 * (binsX_TRGB-2)**2 - 4.3
-elif args.datafile.find('GAIA') >= 0:
-    y_initvalues  = 0.3 * (binsX_TRGB-2)**2 - 3.9
-    y_upperBounds = 0.3 * (binsX_TRGB-2)**2 - 3.5
-    y_lowerBounds = 0.3 * (binsX_TRGB-2)**2 - 4.4
-else:
-    y_initvalues  = np.ones_like(binsX_TRGB) + (-4.0)
-    y_upperBounds = np.ones_like(binsX_TRGB) + (-2.0)
-    y_lowerBounds = np.ones_like(binsX_TRGB) + (-6.0)
+# if args.datafile.find('SDSS') >= 0:
+#     y_initvalues  = 0.3 * (binsX_TRGB-2)**2 - 3.9
+#     y_upperBounds = 0.3 * (binsX_TRGB-2)**2 - 3.6
+#     y_lowerBounds = 0.3 * (binsX_TRGB-2)**2 - 4.3
+# elif args.datafile.find('PS1') >= 0:
+#     y_initvalues  = 0.2 * (binsX_TRGB-2)**2 - 4.0
+#     y_upperBounds = 0.2 * (binsX_TRGB-2)**2 - 3.6
+#     y_lowerBounds = 0.2 * (binsX_TRGB-2)**2 - 4.3
+# elif args.datafile.find('GAIA') >= 0:
+#     y_initvalues  = 0.3 * (binsX_TRGB-2)**2 - 3.9
+#     y_upperBounds = 0.3 * (binsX_TRGB-2)**2 - 3.5
+#     y_lowerBounds = 0.3 * (binsX_TRGB-2)**2 - 4.4
+# else:
+#     y_initvalues  = np.ones_like(binsX_TRGB) + (-4.0)
+#     y_upperBounds = np.ones_like(binsX_TRGB) + (-2.0)
+#     y_lowerBounds = np.ones_like(binsX_TRGB) + (-6.0)
 
+# y_initvalues  = np.ones_like(binsX_TRGB) * 1.0
+# y_upperBounds = np.ones_like(binsX_TRGB) * 1.1
+# y_lowerBounds = np.ones_like(binsX_TRGB) * 0.9
+
+y_initvalues  = 0.31 * (binsX_TRGB-2.1)**2 - 3.9
+y_upperBounds = 0.25 * (binsX_TRGB-2)**2 - 3.0
+y_lowerBounds = 0.25 * (binsX_TRGB-2)**2 - 5.0
 
 gauss_mean = np.zeros((numX_TRGB))
-p_degree = 3 # max polynom degree in the approximating function
+gauss_amplitude = np.zeros((numX_TRGB))
+gauss_stddev = np.zeros((numX_TRGB))
+
+p_degree = 1 # max polynom degree in the approximating function
 fit = fitting.LevMarLSQFitter()
 or_fit = fitting.FittingWithOutlierRemoval(fit, sigma_clip,niter=10,sigma=3.0)
 
+
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
+
+
 for i in range(numX_TRGB):
+    # print(i,'of',numX_TRGB)
     # g_init -- Gauss model with initial values
+    sliceTRGB = regionTRGB[:,i]/np.max(regionTRGB[:,i])
     y_bounds = (y_lowerBounds[i],y_upperBounds[i])
-    g_init = models.Gaussian1D(amplitude=10., mean=y_initvalues[i], stddev=0.2,
-                               bounds={'mean':y_bounds})
+    mapPeak = np.max(sliceTRGB)
+    g_init = models.Gaussian1D(amplitude=mapPeak,
+                    mean=binsY_TRGB[np.abs(sliceTRGB - mapPeak).argmin()],
+                    stddev=5*stepX,
+                    bounds={'mean':y_bounds})
+                    # 'stddev':(stepX*0.0005,stepX*5000),
+                    # 'amplitude':(mapPeak*0.0003,mapPeak*3000)})
     p_init = models.Polynomial1D(p_degree)
     gp_init = g_init + p_init
-    filtered_data, or_fitted_model = or_fit(gp_init,binsY_TRGB,regionTRGB[:,i])
-    gauss_mean[i] = or_fitted_model[0].mean*1
+    # filtered_data, or_fitted_model = or_fit(g_init,binsY_TRGB,sliceTRGB)
+    # or_fitted_model = fit(g_init,binsY_TRGB,sliceTRGB)
+    # gauss_mean[i] = or_fitted_model.mean*1
+    fitted_model = fit(g_init,binsY_TRGB,sliceTRGB)
+    gauss_amplitude[i] = fitted_model.amplitude*1
+    gauss_mean[i] = fitted_model.mean*1
+    gauss_stddev[i] = fitted_model.stddev*1
 
 
 curveTRGB = np.r_['0,2',binsX_TRGB, gauss_mean]
@@ -241,7 +289,7 @@ rlm_model = sm.RLM(robustYarray, robustXarray,
                    M=getattr(sm.robust.norms,methodName)())
 results = rlm_model.fit()
 
-stdout_curveTRGB = True
+stdout_curveTRGB = False
 if stdout_curveTRGB is True:
     print('Approximating TRGB curve')
     print('Parameters:')
@@ -281,7 +329,7 @@ def plot_hist(histogram,place,colorbar,Title):
     fig.colorbar(pcolor, ax=ax[place], fraction=0.046, pad=0.04)
 
 
-def plot_curve(x,y,place,marker,Title):
+def plot_curve(x,y,place,marker,Title,**kwargs):
     ''' This function draws a curve in the graphics window.
         'place' is a tuple (row number, column number) (see def plot_hist())
         'marker' is a type of points/lines (points,squares,../solid,dashed,..)
@@ -289,35 +337,104 @@ def plot_curve(x,y,place,marker,Title):
     ax[place].set(aspect='equal',title=Title)
     ax[place].set_xlim(rangeX[0], rangeX[1])
     ax[place].set_ylim(rangeY[1], rangeY[0])
-    ax[place].plot(x,y,marker)
+    ax[place].plot(x,y,marker,**kwargs)
 
 
 fig, ax = plt.subplots(2,3,figsize=(14,8))
 plt.grid()
 
 plot_curve(arrayX,arrayY,(0,0),',','RGB $V-I$ vs $M_I$')
-plot_curve(curveTRGB[0,:],curveTRGB[1,:],(1,2),'-','')
-plot_curve(curveTRGB[0,:],curveTRGB[1,:],(1,0),'-','')
-plot_curve(curveTRGB[0,:],curveTRGB[1,:],(0,1),'-','')
-plot_curve(robust_curveTRGB[0,:],robust_curveTRGB[1,:],(1,0),'-','TRGB curve')
-plot_curve(robust_curveTRGB[0,:],robust_curveTRGB[1,:],(0,1),'-','TRGB curve')
+plot_curve(curveTRGB[0,:],curveTRGB[1,:],(1,2),'-','',c='black')
+plot_curve(curveTRGB[0,:],curveTRGB[1,:],(1,2),'-','',c='black')
+plot_curve(curveTRGB[0,:],curveTRGB[1,:],(1,0),'+','',c='black',markersize=2)
+# plot_curve(curveTRGB[0,:],curveTRGB[1,:],(0,1),'-','',c='green')
+plot_curve(robust_curveTRGB[0,:],robust_curveTRGB[1,:],(1,0),'-','TRGB curve',
+           c='blue')
+plot_curve(robust_curveTRGB[0,:],robust_curveTRGB[1,:],(0,1),'-','TRGB curve',
+           c='blue')
 
-plot_hist(histogram=Hist,place=(0,1),colorbar=[None,None],
+# plot_hist(histogram=Hist,place=(0,1),colorbar=[None,None],
+          # Title='Histogram'+' (log10)' if args.logFlag is True else '') 
+plot_hist(histogram=Hist_not_log,place=(0,1),colorbar=[0,np.max(Hist_not_log)],
           Title='Histogram'+' (log10)' if args.logFlag is True else '') 
-plot_hist(edgeMapX, (0,2),[0,np.max(edgeMapX)],'Histogram x Gx')
-plot_hist(edgeMapY, (1,1),[0,np.max(edgeMapY)],'Histogram x Gy')
-plot_hist(edgeMapXY,(1,2),[0,np.max(edgeMapXY)],'$\sqrt{(HGx)^2+(HGy)^2}$')
+
+# np.log10(edgeMapX,out=Hist,where=Hist>0)
+# np.log10(edgeMapY,out=Hist,where=Hist>0)
+# np.log10(edgeMapXY,out=Hist,where=Hist>0)
+
+edgeMapXY = edgeMapXY / np.max(edgeMapXY)
+edgeMapX = edgeMapX / np.max(edgeMapX)
+edgeMapY = edgeMapY / np.max(edgeMapY)
+
+
+plot_hist(edgeMapX, (0,2),[0,None],'Histogram x Gx')
+# plot_hist(edgeMapY, (1,1),[0,None],'Histogram x Gy')
+plot_hist(edgeMapXY,(1,2),[0,None],'$\sqrt{(HGx)^2+(HGy)^2}$')
+
+
+ax[1,1].set(title='Discrepance')
+ax[1,1].set_xlim(binsX_TRGB[0], binsX_TRGB[-1])
+ax[1,1].set_ylim(-0.05, 0.05)
+xr = curveTRGB[0,:]
+yr0 = -4 + 0.25 * (xr-2)**2
+yr1 = curveTRGB[1,:] - yr0
+ax[1,1].plot(xr,yr1,'+',c='black',markersize=4)
+# ax[1,1].plot(curveTRGB[0,:],,'+',c='black',markersize=4)
+
+
+# print('---------------------------------------')
+# xaver = (xr[0] + xr[-1]) / 2 + 
+
+for i in range(len(yr1)):
+    print(np.round(stepX,3), np.round(yr1[i],5),np.round(binsX_TRGB[i],2))
+
+# print('stepX : ', stepX)
+# print('xr    : ', xr)
+# print('yr1   : ', yr1)
+
 
 plt.tight_layout()
 
-plt.show()
+FUN10PATH = '/home/pavel/general/TRGB/work/edgeDetection/chern/check_binning/'
+FUN10File = 'fun10_step0p' + str(np.round(stepX,3)).ljust(5,'0')[2:] +'.png'
+plt.savefig(FUN10PATH+FUN10File)
+plt.close()
+
+Hist_in_TRGBregion = Hist_not_log[maskTRGB[0],:][:,maskTRGB[1]]
+pltXarray = binsY_TRGB
+for i in range(numX_TRGB):
+    plt.figure(figsize=(14,6))
+    pltHarray = Hist_in_TRGBregion[:,i]
+    pltYarray = regionTRGB[:,i]
+    pltYarray /= np.max(pltYarray)
+    pltYarray *= np.max(pltHarray)
+    plt.bar(pltXarray,pltHarray,width=stepX,color='gray')
+    plt.plot(pltXarray,pltYarray,'-',color='black',linewidth=2)
+    nY = len(pltYarray)
+    plt.plot([yr0[i]]*nY, np.linspace(0,np.max(pltHarray),nY),
+             '|', markersize=8, c='red')
+    yGauss = np.exp(-0.5 * (pltXarray - gauss_mean[i])**2 / gauss_stddev[i]**2)
+    # yGauss *= gauss_amplitude[i] / np.max(pltYarray) * np.max(pltHarray)
+    yGauss *= np.max(pltHarray)
+    plt.plot(pltXarray,yGauss,'-',color='blue',linewidth=2)
+    plt.plot([gauss_mean[i]]*nY, np.linspace(0,np.max(pltHarray),nY),
+             '|', markersize=5, c='blue')
+    plt.title('V-I: '+str(np.round(binsX_TRGB[i],2)))
+    filename = 'edge_step0p'+ str(np.round(stepX,3)).ljust(5,'0')[2:] + \
+               '_' + str(i).zfill(2) + '.png'
+    plt.savefig(filename)
+    plt.close()
+
+
+
+
 
 
 #================================================
 ''' This block is intended for saving TRGB curve data
     for the following work with that.
 '''
-write_curveTRGB_or_not = True
+write_curveTRGB_or_not = False
 
 if write_curveTRGB_or_not is True:
     curveTable = Table(np.r_['1,2,0',curveTRGB[0],curveTRGB[1], \
@@ -360,7 +477,7 @@ if write_slices_or_not is True:
         file.close()
 
     # colourV_I -- chosen value of the colour to draw correspond slice
-    colourV_I = 2.
+    colourV_I = 2.5
     
     write_color_slice('fileHist_not_log.dat',Hist_not_log,colourV_I)
     write_color_slice('fileEdgeGy.dat',edgeMapY,colourV_I)
